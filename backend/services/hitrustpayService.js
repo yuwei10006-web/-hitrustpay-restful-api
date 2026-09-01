@@ -75,9 +75,30 @@ function buildAuthRequestBody(order, merid) {
 
   if (order.recurringPaymentSetting && order.recurringPaymentSetting.periods) {
     const setting = { ...order.recurringPaymentSetting };
-    const sub = setting.subsequentSetting;
-    const hasSubValue = sub && Object.values(sub).some((v) => v);
-    if (!hasSubValue) delete setting.subsequentSetting;
+    const rawSub = setting.subsequentSetting;
+
+    if (rawSub) {
+      const cleanedSub = {};
+      if (rawSub.phoneNumber) cleanedSub.phoneNumber = rawSub.phoneNumber;
+      if (rawSub.recurringStartDate)
+        cleanedSub.recurringStartDate = rawSub.recurringStartDate;
+      if (rawSub.recurringTransAmount) {
+        cleanedSub.recurringTransAmount = Math.round(
+          Number(rawSub.recurringTransAmount) * 100,
+        );
+      }
+      // recurringDepositFlag 只有在使用者真的選了 "1"（SALE交易）時才有意義送出，
+      // 預設 "0" 本來就是一般交易，不送也沒差，但如果想保留可以判斷是否為 "1"
+      if (rawSub.recurringDepositFlag === "1")
+        cleanedSub.recurringDepositFlag = "1";
+
+      if (Object.keys(cleanedSub).length > 0) {
+        setting.subsequentSetting = cleanedSub;
+      } else {
+        delete setting.subsequentSetting;
+      }
+    }
+
     body.recurringPaymentSetting = setting;
   }
 
