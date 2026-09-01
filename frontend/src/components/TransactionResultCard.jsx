@@ -1,4 +1,35 @@
+import { useEffect, useState } from 'react';
 import './TransactionResultCard.css';
+
+function AnimatedValue({ value }) {
+  const isPureNumber =
+    typeof value === 'number' ||
+    (typeof value === 'string' && /^-?\d+(\.\d+)?$/.test(value.trim()));
+  const [display, setDisplay] = useState(isPureNumber ? 0 : value);
+
+  useEffect(() => {
+    if (!isPureNumber) {
+      setDisplay(value);
+      return;
+    }
+    const target = Number(value);
+    const decimals = (String(value).split('.')[1] || '').length;
+    const duration = 600;
+    const start = performance.now();
+    let frame;
+
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay((target * eased).toFixed(decimals));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value, isPureNumber]);
+
+  return <>{display}</>;
+}
 
 export default function TransactionResultCard({ success, retCode, rows, note }) {
   const visibleRows = rows.filter(
@@ -23,7 +54,7 @@ export default function TransactionResultCard({ success, retCode, rows, note }) 
         {visibleRows.map((r) => (
           <div className="tx-result-row" key={r.key}>
             <dt>{r.label}（{r.key}）</dt>
-            <dd>{r.value}</dd>
+            <dd><AnimatedValue value={r.value} /></dd>
           </div>
         ))}
       </dl>

@@ -6,26 +6,56 @@
   padding: 24px;
 }
 
-.checkout-card {
-  position: relative;
-  overflow: hidden;
-  max-width: 640px;
-  margin: 0 auto;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 32px;
-  box-shadow: 0 1px 2px rgba(18, 22, 28, 0.04);
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
 }
 
-.checkout-card::before {
+.checkout-card {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      var(--color-border) 0deg,
+      var(--color-accent) 35deg,
+      var(--color-primary) 90deg,
+      var(--color-border) 150deg,
+      var(--color-border) 360deg
+    ) border-box;
+  box-shadow: 0 1px 2px rgba(18, 22, 28, 0.04), 0 12px 32px rgba(14, 111, 92, 0.08);
+  animation: borderRotate 6s linear infinite;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.15s ease;
+}
+
+.checkout-card::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  inset: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(201, 162, 39, 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.checkout-card:hover::after {
+  opacity: 1;
+}
+
+.checkout-card:hover::after {
+  opacity: 1;
+}
+
+@keyframes borderRotate {
+  to { --border-angle: 360deg; }
 }
 
 .checkout-card--wide {
@@ -112,6 +142,19 @@
   color: var(--color-primary-dark);
 }
 
+.amount-input:focus {
+  animation: amountGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes amountGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18), 0 0 10px rgba(201, 162, 39, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.28), 0 0 22px rgba(201, 162, 39, 0.35);
+  }
+}
+
 .advanced-section {
   border: 1px solid var(--color-border);
   border-radius: 10px;
@@ -155,7 +198,9 @@
   font-weight: 500;
   font-family: var(--font-body);
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(120deg, var(--color-primary), var(--color-accent), var(--color-primary-dark), var(--color-primary));
+  background-size: 300% 100%;
+  animation: flowGradient 6s ease infinite;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -163,6 +208,12 @@
   overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   margin-top: 8px;
+}
+
+@keyframes flowGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .pay-button::after {
@@ -214,13 +265,14 @@
 }
 
 .spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: #fff;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: var(--color-accent);
+  border-right-color: #fff;
   border-radius: 50%;
   display: inline-block;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.6s linear infinite;
   margin-right: 8px;
   vertical-align: -2px;
 }

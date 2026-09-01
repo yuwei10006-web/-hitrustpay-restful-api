@@ -76,3 +76,30 @@
   font-size: 12px;
   color: var(--color-muted);
 }
+
+.tx-result.success .tx-result-icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.tx-result.success .tx-result-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow:
+    14px -6px 0 -1px var(--color-accent),
+    -12px -8px 0 -1px var(--color-primary),
+    16px 8px 0 -1px var(--color-primary),
+    -14px 6px 0 -1px var(--color-accent),
+    2px -16px 0 -1px var(--color-primary),
+    -2px 16px 0 -1px var(--color-accent);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: burstOut 0.6s ease-out 0.5s forwards;
+  pointer-events: none;
+}
