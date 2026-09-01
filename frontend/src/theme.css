@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+:root {
+  --color-ink: #12161C;
+  --color-canvas: #F3F5F4;
+  --color-surface: #FFFFFF;
+  --color-primary: #0E6F5C;
+  --color-primary-dark: #0A5548;
+  --color-accent: #C9A227;
+  --color-border: #E1E4E2;
+  --color-danger: #B3261E;
+  --color-muted: #6B7280;
+
+  --font-body: 'Noto Sans TC', 'Inter', sans-serif;
+  --font-display: 'Fraunces', 'Noto Sans TC', serif;
+
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+  radial-gradient(1200px 600px at 100% -10%, rgba(201, 162, 39, 0.06), transparent 60%),
+  radial-gradient(900px 500px at -10% 110%, rgba(14, 111, 92, 0.06), transparent 60%),
+  var(--color-canvas);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+:root {
+  /* ...原本的變數保留... */
+  --color-sidebar-bg: #12161C;
+  --color-sidebar-text: #A9AFB7;
+  --color-sidebar-text-active: #FFFFFF;
+  --color-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+  --color-sidebar-active-bg: rgba(255, 255, 255, 0.10);
+  --color-sidebar-accent: #2BB596;
+  --color-sidebar-border: rgba(255, 255, 255, 0.08);
+  --color-env-badge-bg: rgba(201, 162, 39, 0.15);
+  --color-env-badge-text: #8A6D1B;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}

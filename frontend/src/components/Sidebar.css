@@ -1,0 +1,119 @@
+.sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  padding: 24px 14px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 24px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--color-sidebar-border);
+}
+
+.sidebar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--color-sidebar-accent), #1C8A72);
+  color: #0A1512;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(43, 181, 150, 0.35);
+}
+
+.sidebar-brand-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-sidebar-text-active);
+  margin-bottom: 4px;
+}
+
+.env-pill {
+  font-size: 11px;
+  color: var(--color-sidebar-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.env-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-sidebar-accent);
+  display: inline-block;
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+.sidebar-group {
+  margin-bottom: 22px;
+}
+
+.sidebar-group-title {
+  font-size: 12px;
+  color: #6B7280;
+  padding: 0 10px 6px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  text-decoration: none;
+  color: var(--color-sidebar-text);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.sidebar-item:hover {
+  background: var(--color-sidebar-hover-bg);
+}
+
+.sidebar-item--active {
+  position: relative;
+  background: var(--color-sidebar-active-bg);
+  color: var(--color-sidebar-text-active);
+}
+
+.sidebar-item--active::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--color-sidebar-accent), var(--color-accent));
+}
+
+.sidebar-item--disabled {
+  color: #565B63;
+  cursor: default;
+}
+
+.sidebar-item--disabled:hover {
+  background: none;
+}
+
+.soon-tag {
+  margin-left: auto;
+  font-size: 10px;
+  color: #565B63;
+  border: 1px solid var(--color-sidebar-border);
+  padding: 2px 6px;
+  border-radius: 10px;
+}

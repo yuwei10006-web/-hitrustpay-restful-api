@@ -1,0 +1,78 @@
+.tx-result {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  animation: fadeSlideUp 0.35s ease both;
+}
+
+.tx-result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tx-result-icon-ring {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  opacity: 0.35;
+}
+
+.tx-result-icon-check {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: drawCheck 0.4s ease 0.2s forwards;
+}
+
+.tx-result.success .tx-result-header {
+  color: var(--color-primary-dark);
+}
+
+.tx-result.failure .tx-result-header {
+  color: var(--color-danger);
+}
+
+.tx-result-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 14px 0;
+}
+
+.tx-result-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.tx-result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.tx-result-row dt {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.tx-result-row dd {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--color-ink);
+}
+
+.tx-result-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
