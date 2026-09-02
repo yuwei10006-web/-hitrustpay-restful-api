@@ -103,3 +103,28 @@
   animation: burstOut 0.6s ease-out 0.5s forwards;
   pointer-events: none;
 }
+
+.tx-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;   /* 新增 */
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.tx-result-row dt {
+  color: var(--color-muted);
+  margin: 0;
+  flex: 0 0 auto;      /* 新增：label 不被壓縮 */
+  white-space: nowrap; /* 新增 */
+}
+
+.tx-result-row dd {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  text-align: right;        /* 新增 */
+  min-width: 0;              /* 新增 */
+  word-break: break-all;     /* 新增：長字串正常換行不溢出 */
+  overflow-wrap: anywhere;   /* 新增 */
+}

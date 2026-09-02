@@ -26,7 +26,7 @@ export default function PaymentResult() {
       { label: '訂單金額', key: 'amount', value: order?.amount },
       { label: '交易類別', key: 'type', value: order?.type || 'Auth' },
       { label: '卡號', key: 'cardnumber', value: order?.pan },
-      { label: '交易序號(trxToken)', key: 'trxtoken', value: order?.trxToken },
+      { label: '交易序號', key: 'trxToken', value: order?.trxToken },
       { label: '到期日', key: 'expiry', value: order?.expiry },
     ];
 

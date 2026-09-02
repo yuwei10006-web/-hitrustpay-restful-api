@@ -78,6 +78,7 @@ export function useOrderForm({ defaultOrderDesc = "API 串接測試" } = {}) {
     merid,
     setMerid,
     orderNumber,
+    setOrderNumber,
     regenerateOrderNumber,
     currency,
     setCurrency,

@@ -58,7 +58,7 @@ export default function AuthorizationTokenPage() {
             </div>
             <div className="field">
               <label>訂單編號</label>
-              <input value={form.orderNumber} disabled />
+              <input value={form.orderNumber} onChange={(e) => form.setOrderNumber(e.target.value)} />
             </div>
             <div className="field">
               <label>幣別</label>
