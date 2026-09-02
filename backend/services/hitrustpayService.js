@@ -3,11 +3,15 @@ const { generateAuthHeaders } = require("../signature");
 const { saveOrder } = require("./orderStore");
 
 function resolveApiKey(merid) {
-  const key = config.apiKeysByMerid[merid] || config.apiKeyBase64;
-  if (!key) {
-    throw new Error(`找不到商店代號 ${merid} 對應的 API Key，請確認 .env 設定`);
+  if (config.apiKeysByMerid[merid]) {
+    return config.apiKeysByMerid[merid];
   }
-  return key;
+  if (merid === config.merid && config.apiKeyBase64) {
+    return config.apiKeyBase64;
+  }
+  throw new Error(
+    `商店代號 ${merid} 沒有對應的 API Key（.env 的 HITRUSTPAY_API_KEYS 沒有這個代號，且它不是預設的 MERID=${config.merid}），請確認商店代號有沒有打錯`,
+  );
 }
 
 async function callHitrustpayApi(action, merid, requestBody) {
@@ -525,6 +529,55 @@ async function mobileAuth(order) {
   return data;
 }
 
+// ---------- 信用卡綁卡交易授權(BindingCardAuth) ----------
+
+function buildBindingCardAuthRequestBody(order, merid) {
+  const body = {
+    merid,
+    orderNumber: order.orderNumber,
+    currency: order.currency || "TWD",
+    amount: Math.round(order.amount * 100),
+    orderDesc: order.orderDesc,
+    depositFlag: order.depositFlag ?? "0",
+    queryFlag: order.queryFlag ?? "0",
+    returnURL: `${config.backendBaseUrl}/api/payment/return`,
+    updateURL: `${config.backendBaseUrl}/api/payment/notify`,
+    bindingWithVerify: order.bindingWithVerify ?? "0",
+  };
+
+  if (order.installmentPeriod) body.installmentPeriod = order.installmentPeriod;
+  if (order.redeemFlag && order.redeemFlag !== "0")
+    body.redeemFlag = order.redeemFlag;
+
+  if (order.creditCard && order.creditCard.pan) {
+    body.creditCard = {
+      pan: order.creditCard.pan,
+      expiry: order.creditCard.expiry,
+      ...(order.creditCard.cvv2 ? { cvv2: order.creditCard.cvv2 } : {}),
+    };
+  }
+
+  if (order.subMerchant && order.subMerchant.subMerid) {
+    body.subMerchant = order.subMerchant;
+  }
+
+  return body;
+}
+
+async function bindingCardAuth(order) {
+  const merid = order.merid || config.merid;
+  const body = buildBindingCardAuthRequestBody(order, merid);
+
+  saveOrder(order.orderNumber, {
+    merid,
+    amount: order.amount,
+    orderDesc: order.orderDesc,
+    type: "Auth",
+  });
+
+  return callHitrustpayApi("binding-card-auth", merid, body);
+}
+
 module.exports = {
   authorize,
   authorizeSsl,
@@ -538,4 +591,5 @@ module.exports = {
   trxTokenAuth,
   callHitrustpayApi,
   mobileAuth,
+  bindingCardAuth,
 };

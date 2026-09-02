@@ -13,6 +13,7 @@ const {
   trxTokenAuthSsl,
   trxTokenAuth,
   mobileAuth,
+  bindingCardAuth,
 } = require("../services/hitrustpayService");
 const { saveOrder, getOrder } = require("../services/orderStore");
 
@@ -64,8 +65,17 @@ router.get("/orders/:orderNumber", (req, res) => {
 });
 
 router.post("/notify", (req, res) => {
-  const { orderNumber, merid, transType, retCode, authCode, authRRN, pan } =
-    req.body;
+  const {
+    orderNumber,
+    merid,
+    transType,
+    retCode,
+    authCode,
+    authRRN,
+    pan,
+    trxToken,
+    expiry,
+  } = req.body;
   if (orderNumber) {
     saveOrder(orderNumber, {
       merid,
@@ -73,6 +83,8 @@ router.post("/notify", (req, res) => {
       authCode,
       authRRN,
       pan,
+      trxToken,
+      expiry,
       type: TYPE_LABELS[transType] || transType,
     });
   }
@@ -167,6 +179,18 @@ router.post("/authorize-token", async (req, res) => {
 router.post("/mobile-auth", async (req, res) => {
   try {
     const data = await mobileAuth({
+      ...req.body,
+      orderNumber: req.body.orderNumber || "ORD" + Date.now(),
+    });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post("/binding-card-auth", async (req, res) => {
+  try {
+    const data = await bindingCardAuth({
       ...req.body,
       orderNumber: req.body.orderNumber || "ORD" + Date.now(),
     });

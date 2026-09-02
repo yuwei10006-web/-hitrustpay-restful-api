@@ -109,3 +109,12 @@ export async function startMobileAuth(payload) {
   });
   return res.json();
 }
+
+export async function startBindingCardAuth(payload) {
+  const res = await fetch(`${BACKEND_URL}/api/payment/binding-card-auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}

@@ -36,6 +36,12 @@ export const NAV_GROUPS = [
       },
       { path: "/query", label: "訂單查詢", icon: "Search", enabled: true },
       {
+        path: "/binding-card-auth",
+        label: "信用卡綁卡",
+        icon: "ShieldCheck",
+        enabled: true,
+      },
+      {
         path: "/authorization-ssl-token",
         label: "直接授權含Token",
         icon: "CreditCard",

@@ -17,6 +17,7 @@ import SipCreatePage from './pages/SipCreatePage';
 import FollowPayPage from './pages/FollowPayPage';
 import ApplePayPage from './pages/ApplePayPage';
 import LinePayPage from './pages/LinePayPage';
+import BindingCardAuthPage from './pages/BindingCardAuthPage';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/follow-pay" element={<FollowPayPage />} />
           <Route path="/apple-pay" element={<ApplePayPage />} />
           <Route path="/line-pay" element={<LinePayPage />} />
+          <Route path="/binding-card-auth" element={<BindingCardAuthPage />} />
         </Route>
         <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
