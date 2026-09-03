@@ -12,8 +12,10 @@ export default function FollowPayPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState('');
+  const [iframeHeight, setIframeHeight] = useState(640);
   const iframeRef = useRef(null);
   const tokenInputRef = useRef(null);
+  const payButtonRef = useRef(null);
 
   // 依 HiTRUSTpay 文件要求，載入 Follow Pay 專用的 JS 資源
   useEffect(() => {
@@ -25,12 +27,52 @@ export default function FollowPayPage() {
     }
   }, []);
 
-  // 拿到 token 後，設進 iframe 的 src 與隱藏欄位的 value（文件規定的做法）
+    // 拿到 token 後，設進 iframe 的 src 與隱藏欄位的 value（文件規定的做法）
   useEffect(() => {
     if (!token) return;
     if (iframeRef.current) iframeRef.current.src = token;
     if (tokenInputRef.current) tokenInputRef.current.value = token;
+    if (payButtonRef.current) payButtonRef.current.disabled = true; // 新增這行
+    setIframeHeight(640);
   }, [token]);
+
+  // 保險機制：若嵌入頁面有透過 postMessage 回報實際內容高度，就動態把 iframe 撐高，
+  // 避免內容比預設高度還高卻因為捲動被關閉而看不到卡號欄位
+  useEffect(() => {
+    if (!token) return;
+    const handleMessage = (event) => {
+      const data = event.data;
+      let height;
+      if (typeof data === 'number') {
+        height = data;
+      } else if (data && typeof data === 'object') {
+        height = data.height ?? data.iframeHeight ?? data.contentHeight;
+      } else if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          height = parsed.height ?? parsed.iframeHeight ?? parsed.contentHeight;
+        } catch {
+          /* 不是 JSON，忽略 */
+        }
+      }
+      if (typeof height === 'number' && height > 0) {
+        setIframeHeight((prev) => Math.max(prev, Math.ceil(height)));
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [token]);
+
+  const handlePayButtonClick = () => {
+    const followPayTokenElement = document.getElementById('followPayToken');
+    const targetIframe = document.getElementById('hitrust_iframe');
+    if (!targetIframe) return;
+    const post_data = {
+      event: 'hitrustpay',
+      followPayToken: followPayTokenElement ? followPayTokenElement.value : '',
+    };
+    targetIframe.contentWindow.postMessage(JSON.stringify(post_data), '*');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,15 +165,37 @@ export default function FollowPayPage() {
               ? '請在下方 iframe 內輸入信用卡資料完成付款'
               : '按上方「產生付款頁」後，這裡會顯示 HiTRUSTpay 的付款元件'}
           </p>
-          <iframe
-            id="hitrust_iframe"
-            ref={iframeRef}
-            frameBorder="0"
-            scrolling="no"
-            title="HiTRUSTpay Follow Pay"
-            style={{ width: '100%', minHeight: token ? 420 : 0, border: token ? '1px solid var(--color-border)' : 'none', borderRadius: 'var(--radius)' }}
-          />
+            <iframe
+              id="hitrust_iframe"
+              ref={iframeRef}
+              frameBorder="0"
+              title="HiTRUSTpay Follow Pay"
+              style={{
+                width: '100%',
+                height: token ? Math.min(iframeHeight, Math.round(window.innerHeight * 0.85)) : 0,
+                border: token ? '1px solid var(--color-border)' : 'none',
+                borderRadius: 'var(--radius)',
+                transition: 'height 0.2s ease',
+              }}
+            />
           <input type="hidden" id="followPayToken" ref={tokenInputRef} />
+          <button
+            type="button"
+            id="btn-hitrustpay"
+            ref={payButtonRef}
+            className="pay-button"
+            onClick={handlePayButtonClick}
+            style={{
+              marginTop: 12,
+              opacity: token ? 1 : 0,
+              height: token ? undefined : 0,
+              padding: token ? undefined : 0,
+              overflow: 'hidden',
+              pointerEvents: token ? 'auto' : 'none',
+            }}
+          >
+            確認付款
+          </button>
           <button type="button" id="btn-hitrustpay" style={{ display: 'none' }}>
             Pay
           </button>
