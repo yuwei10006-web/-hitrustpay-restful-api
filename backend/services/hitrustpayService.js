@@ -21,7 +21,7 @@ async function callHitrustpayApi(action, merid, requestBody) {
     requestBody,
   );
   const url = `${config.isProd ? config.endpoints.prod : config.endpoints.test}/${action}`;
-
+  console.log(`[HiTRUSTpay] → ${action} 請求`, { url, timestamp, signature, body: bodyString });
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -33,7 +33,9 @@ async function callHitrustpayApi(action, merid, requestBody) {
   });
 
   const result = await response.json();
+  console.log(`[HiTRUSTpay] ← ${action} 回應`, result); 
   if (!result.success) {
+    console.error(`[HiTRUSTpay] ✕ ${action} 失敗:`, result.code, result.message);
     throw new Error(`${action} 呼叫失敗: ${result.code} ${result.message}`);
   }
   return result.data;

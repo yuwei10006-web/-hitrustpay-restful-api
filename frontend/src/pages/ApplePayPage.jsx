@@ -12,6 +12,7 @@ export default function ApplePayPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [submittedOrderNumber, setSubmittedOrderNumber] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +40,7 @@ export default function ApplePayPage() {
         setError(response.message || '交易發起失敗，請稍後再試');
         return;
       }
+      setSubmittedOrderNumber(form.orderNumber);
       setResult(response.data);
     } catch (err) {
       setError('無法連線到付款服務，請稍後再試');
@@ -143,7 +145,7 @@ export default function ApplePayPage() {
             retCode={result.retCode}
             rows={[
               { label: '商店代號', key: 'merid', value: result.merid },
-              { label: '訂單編號', key: 'ordernumber', value: form.orderNumber },
+              { label: '訂單編號', key: 'ordernumber', value: submittedOrderNumber },
               { label: '訂單金額', key: 'amount', value: form.amount },
               { label: '卡號', key: 'cardnumber', value: cc?.pan },
               { label: '銀行授權碼', key: 'authcode', value: cc?.authCode },
