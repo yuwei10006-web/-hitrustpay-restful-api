@@ -37,4 +37,21 @@ async function linePayAuth(order) {
   return callHitrustpayApi("linepay-auth", merid, body);
 }
 
-module.exports = { linePayAuth };
+// ---------- LINE Pay交易查詢(LinePayQueryOrder) ----------
+
+function buildLinePayQueryOrderRequestBody(order, merid) {
+  return {
+    merid,
+    orderNumber: order.orderNumber,
+  };
+}
+
+async function linePayQueryOrder(order) {
+  const merid = order.merid || config.merid;
+  const body = buildLinePayQueryOrderRequestBody(order, merid);
+
+  // 純查詢，不更動我們本地暫存訂單狀態
+  return callHitrustpayApi("linepay-query-order", merid, body);
+}
+
+module.exports = { linePayAuth, linePayQueryOrder };

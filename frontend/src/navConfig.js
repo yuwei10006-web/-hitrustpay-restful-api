@@ -99,6 +99,12 @@ export const NAV_GROUPS = [
         icon: "Smartphone",
         enabled: true,
       },
+      {
+        path: "/line-pay-query",
+        label: "LINE Pay交易查詢",
+        icon: "Search",
+        enabled: true,
+      },
     ],
   },
 ];
