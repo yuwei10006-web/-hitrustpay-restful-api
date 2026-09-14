@@ -21,7 +21,12 @@ async function callHitrustpayApi(action, merid, requestBody) {
     requestBody,
   );
   const url = `${config.isProd ? config.endpoints.prod : config.endpoints.test}/${action}`;
-  console.log(`[HiTRUSTpay] → ${action} 請求`, { url, timestamp, signature, body: bodyString });
+  console.log(`[HiTRUSTpay] → ${action} 請求`, {
+    url,
+    timestamp,
+    signature,
+    body: bodyString,
+  });
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -33,9 +38,13 @@ async function callHitrustpayApi(action, merid, requestBody) {
   });
 
   const result = await response.json();
-  console.log(`[HiTRUSTpay] ← ${action} 回應`, result); 
+  console.log(`[HiTRUSTpay] ← ${action} 回應`, result);
   if (!result.success) {
-    console.error(`[HiTRUSTpay] ✕ ${action} 失敗:`, result.code, result.message);
+    console.error(
+      `[HiTRUSTpay] ✕ ${action} 失敗:`,
+      result.code,
+      result.message,
+    );
     throw new Error(`${action} 呼叫失敗: ${result.code} ${result.message}`);
   }
   return result.data;
@@ -580,6 +589,75 @@ async function bindingCardAuth(order) {
   return callHitrustpayApi("binding-card-auth", merid, body);
 }
 
+// ---------- 行動支付已解密資料交易授權(MobileAuthDecrypted) ----------
+
+function buildMobileAuthDecryptedRequestBody(order, merid) {
+  if (!order.walletType) {
+    throw new Error("行動支付已解密資料交易授權需要提供 walletType");
+  }
+  if (!order.creditCard || !order.creditCard.pan || !order.creditCard.expiry) {
+    throw new Error("行動支付已解密資料交易授權需要提供解密後的卡號與到期日");
+  }
+
+  const body = {
+    merid,
+    orderNumber: order.orderNumber,
+    currency: order.currency || "TWD",
+    amount: Math.round(order.amount * 100),
+    orderDesc: order.orderDesc,
+    depositFlag: order.depositFlag ?? "0",
+    queryFlag: order.queryFlag ?? "0",
+    walletType: order.walletType,
+    creditCard: {
+      pan: order.creditCard.pan,
+      expiry: order.creditCard.expiry,
+      ...(order.creditCard.cvv2 ? { cvv2: order.creditCard.cvv2 } : {}),
+    },
+    updateURL: `${config.backendBaseUrl}/api/payment/notify`,
+  };
+
+  if (order.installmentPeriod) body.installmentPeriod = order.installmentPeriod;
+  if (order.redeemFlag && order.redeemFlag !== "0")
+    body.redeemFlag = order.redeemFlag;
+
+  // walletType=1(Apple Pay) 解密後需帶入 TAVV / ECI
+  if (order.walletType === "1") {
+    if (order.tavv) body.tavv = order.tavv;
+    if (order.eci) body.eci = order.eci;
+  }
+
+  if (order.subMerchant && order.subMerchant.subMerid) {
+    body.subMerchant = order.subMerchant;
+  }
+
+  if (order.extensionField) body.extensionField = order.extensionField;
+
+  return body;
+}
+
+async function mobileAuthDecrypted(order) {
+  const merid = order.merid || config.merid;
+  const body = buildMobileAuthDecryptedRequestBody(order, merid);
+
+  saveOrder(order.orderNumber, {
+    merid,
+    amount: order.amount,
+    orderDesc: order.orderDesc,
+    type: "AuthSSL",
+  });
+
+  const data = await callHitrustpayApi("mobile-auth-decrypted", merid, body);
+
+  saveOrder(order.orderNumber, {
+    retCode: data.retCode,
+    pan: data.creditCardTransactionResult?.pan,
+    authCode: data.creditCardTransactionResult?.authCode,
+    authRRN: data.creditCardTransactionResult?.authRRN,
+  });
+
+  return data;
+}
+
 module.exports = {
   authorize,
   authorizeSsl,
@@ -593,5 +671,6 @@ module.exports = {
   trxTokenAuth,
   callHitrustpayApi,
   mobileAuth,
+  mobileAuthDecrypted,
   bindingCardAuth,
 };

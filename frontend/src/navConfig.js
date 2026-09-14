@@ -94,6 +94,12 @@ export const NAV_GROUPS = [
         enabled: true,
       },
       {
+        path: "/apple-pay-decrypted",
+        label: "Apple Pay(已解密資料)",
+        icon: "Smartphone",
+        enabled: true,
+      },
+      {
         path: "/line-pay",
         label: "LINE Pay",
         icon: "Smartphone",

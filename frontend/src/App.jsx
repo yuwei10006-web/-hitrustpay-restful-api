@@ -19,6 +19,7 @@ import ApplePayPage from './pages/ApplePayPage';
 import LinePayPage from './pages/LinePayPage';
 import BindingCardAuthPage from './pages/BindingCardAuthPage';
 import LinePayQueryPage from './pages/LinePayQueryPage';
+import ApplePayDecryptedPage from './pages/ApplePayDecryptedPage';
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/line-pay" element={<LinePayPage />} />
           <Route path="/binding-card-auth" element={<BindingCardAuthPage />} />
           <Route path="/line-pay-query" element={<LinePayQueryPage />} />
+          <Route path="/apple-pay-decrypted" element={<ApplePayDecryptedPage />} />
         </Route>
         <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>

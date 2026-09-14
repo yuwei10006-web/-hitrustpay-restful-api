@@ -13,6 +13,7 @@ const {
   trxTokenAuthSsl,
   trxTokenAuth,
   mobileAuth,
+  mobileAuthDecrypted,
   bindingCardAuth,
 } = require("../services/hitrustpayService");
 const { saveOrder, getOrder } = require("../services/orderStore");
@@ -191,6 +192,18 @@ router.post("/mobile-auth", async (req, res) => {
 router.post("/binding-card-auth", async (req, res) => {
   try {
     const data = await bindingCardAuth({
+      ...req.body,
+      orderNumber: req.body.orderNumber || "ORD" + Date.now(),
+    });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post("/mobile-auth-decrypted", async (req, res) => {
+  try {
+    const data = await mobileAuthDecrypted({
       ...req.body,
       orderNumber: req.body.orderNumber || "ORD" + Date.now(),
     });
